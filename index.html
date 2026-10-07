@@ -356,6 +356,17 @@ html.light #toast{box-shadow:0 10px 30px rgba(15,23,42,.15)}
                 </ul>
             </div>
 
+            <!-- Geo Location -->
+            <div id="geoCard" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 space-y-2">
+                <h4 class="text-xs sm:text-sm font-bold text-slate-200 flex items-center gap-2">
+                    <i class="ph-bold ph-map-pin text-sky-400"></i>
+                    <span data-i18n="geo_title">الموقع الجغرافي للسيرفر</span>
+                </h4>
+                <div id="geoValue" class="text-sm font-bold text-slate-100"></div>
+                <div id="geoMeta" class="text-xs text-slate-400 space-y-0.5"></div>
+                <div class="text-[10px] text-slate-500" data-i18n="geo_note"></div>
+            </div>
+
             <!-- 6 Modules Metrics Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 
@@ -522,6 +533,7 @@ html.light #toast{box-shadow:0 10px 30px rgba(15,23,42,.15)}
         try { const h = JSON.parse(store.get('guardurl_history') || '[]'); if (Array.isArray(h)) scanHistory = h; } catch (e) {}
         let scanTimeout = null, toastTimer = null;
         let isScanning = false;
+        let scanSeq = 0;
         let scanInterval = null;
         let lastResult = null;
 
@@ -538,6 +550,8 @@ html.light #toast{box-shadow:0 10px 30px rgba(15,23,42,.15)}
         });
 
 const I18N = {"ar": {"r_allow": "النطاق ضمن القائمة البيضاء الموثوقة.", "r_block": "النطاق ضمن القائمة السوداء المحظورة.", "brand": "آمن", "subtitle": "منصة تحليل الروابط متعددة المؤشرات", "admin_btn": "إدارة النظام", "badge": "محرك تقييم المخاطر المتقدم (Multi-Layer Risk Scoring)", "hero_title": "تحقق من سلامة أي رابط فوراً", "hero_desc": "أدخل الرابط المشبوه ليحلّله النظام محلياً عبر 6 مؤشرات (بنية الرابط، الانتحال، النطاق، التشفير، التوجيه، الملفات) ويعرض أسباب التقييم. النتيجة تقديرية ولا تغني عن الحذر.", "scan_btn": "فحص الرابط", "scan_btn_m": "فحص الرابط الآن", "demo_label": "روابط توضيحية للتجربة:", "demo_safe": "آمن (Safe)", "demo_warn": "تحذير (Warning)", "demo_danger": "خطر (Danger)", "scan_step": "جاري فحص الطبقات الأمنية...", "scan_status": "تحليل خوارزميات محرك التقييم...", "cancel": "إلغاء الفحص (Cancel)", "score_label": "درجة المخاطر (Risk Score)", "reasons_title": "أسباب التقييم والدلائل المرصودة:", "mt1": "1. بنية الرابط (Structure)", "mt2": "2. انتحال النطاق (Typosquatting)", "mt3": "3. مؤشرات النطاق (Domain)", "mt4": "4. تشفير الاتصال (HTTPS)", "mt5": "5. إعادات التوجيه (Redirects)", "mt6": "6. الملفات الخطرة (Files)", "copy_btn": "نسخ التقرير", "again_btn": "فحص رابط آخر", "hist_title": "سجل الفحوصات (Scan History)", "clear": "مسح", "th_url": "الرابط", "th_res": "النتيجة", "th_risk": "المخاطر", "th_time": "الوقت", "th_act": "إجراء", "empty": "لا يوجد نتائج مطابقة في سجل الفحوصات.", "admin_title": "لوحة تحكم المسؤول (Admin Panel)", "stat_total": "إجمالي الفحوصات", "stat_danger": "الروابط الخطرة", "weights": "تعديل أوزان الفحص (Weights)", "close": "إغلاق", "footer1": "جامعة القصيم - الكلية التطبيقية © 2026", "footer2": "إشراف: د. وليد الكرامتي", "sc1": "بنية الرابط [20%]", "sc2": "انتحال النطاق [20%]", "sc3": "مؤشرات النطاق [15%]", "sc4": "تشفير الاتصال [10%]", "sc5": "إعادات التوجيه [10%]", "sc6": "الملفات الخطرة [25%]", "url_label": "الرابط:", "theme_title": "تغيير المظهر", "url_aria": "رابط الفحص", "hist_ph": "بحث في السجل...", "b_safe": "آمن", "b_warn": "تحذير", "b_danger": "خطر", "rescan": "إعادة", "m1_ok": "بنية سليمة", "m1_bad": "رموز مشبوهة / رابط طويل", "m2_ok": "غير مجسّد", "m2_bad": "محاكاة علامة معروفة!", "m3_ok": "لا مؤشرات مشبوهة", "m3_bad": "امتداد/كلمات مشبوهة", "m4_ok": "تشفير HTTPS فعال", "m4_bad": "غير مشفر (HTTP)", "m5_ok": "مباشر بدون توجيه", "m5_bad": "توجيه مخفي / رابط مختصر", "m6_ok": "لا ملفات خطرة", "m6_bad": "ملف تنفيذي/مضغوط مشبوه", "r0": "لم تُرصد مؤشرات خطورة في الرابط نفسه. هذا لا يضمن سلامة محتوى الموقع.", "r1": "بنية الرابط مريبة: عنوان IP، أو رمز @، أو نطاق مموّه (punycode)، أو رابط طويل جداً، أو نطاقات فرعية كثيرة.", "r2": "تشابه مع اسم علامة أو جهة معروفة (بنك/حكومة/خدمة) في نطاق غير رسمي (Typosquatting).", "r3": "النطاق يستخدم امتداداً أو استضافة مجانية أو كلمات شائعة في التصيّد.", "r4": "الرابط يستخدم HTTP غير المشفّر، والبيانات المرسلة مكشوفة.", "r5": "الرابط مختصر أو يحمل معامل توجيه إلى رابط آخر لإخفاء الوجهة النهائية.", "r6": "الرابط يشير إلى ملف تنفيذي أو مضغوط قد يكون برمجية خبيثة.", "tag_SAFE": "Safe (آمن)", "tag_WARNING": "Warning (تحذير)", "tag_DANGER": "Danger (خطر جداً)", "title_SAFE": "الرابط آمن وموثوق", "title_WARNING": "رابط مشبوه - يوصى بالحذر", "title_DANGER": "خطر! لا تقم بفتح هذا الرابط", "desc_SAFE": "مؤشر المخاطر منخفض جداً، لم يظهر الفحص أي تهديدات احتيالية.", "desc_WARNING": "يحتوي الرابط على مؤشرات مضللة أو يفتقر للحد الأدنى من شهادات الأمان.", "desc_DANGER": "تم تصنيف الرابط كتهديد عالي الخطورة يتضمن خديعة تصيد أو برمجيات خبيثة.", "toast_invalid": "الرابط غير صالح، تأكد من كتابته بشكل صحيح", "toast_cancel": "تم إلغاء عملية الفحص", "toast_clear": "تم مسح سجل الفحوصات", "toast_copied": "تم نسخ التقرير إلى الحافظة بنجاح!", "toast_copyfail": "تعذر النسخ، انسخ النص يدوياً"}, "en": {"r_allow": "The domain is on the trusted allowlist.", "r_block": "The domain is on the blocklist.", "brand": "Aman", "subtitle": "Automated multi-layer link safety platform", "admin_btn": "Admin Panel", "badge": "Advanced Risk Scoring Engine (Multi-Layer)", "hero_title": "Check Any Link's Safety Instantly", "hero_desc": "Paste a suspicious link and the system analyzes it locally across 6 indicators (structure, spoofing, domain, encryption, redirects, files) and explains the score. Results are estimates, not a guarantee.", "scan_btn": "Scan Link", "scan_btn_m": "Scan Link Now", "demo_label": "Demo links to try:", "demo_safe": "Safe", "demo_warn": "Warning", "demo_danger": "Danger", "scan_step": "Scanning security layers...", "scan_status": "Running the scoring engine analysis...", "cancel": "Cancel scan", "score_label": "Risk Score", "reasons_title": "Assessment reasons and detected evidence:", "mt1": "1. URL Structure", "mt2": "2. Typosquatting", "mt3": "3. Domain Indicators", "mt4": "4. Connection Encryption (HTTPS)", "mt5": "5. Redirects", "mt6": "6. Risky Files", "copy_btn": "Copy report", "again_btn": "Scan another link", "hist_title": "Scan History", "clear": "Clear", "th_url": "URL", "th_res": "Result", "th_risk": "Risk", "th_time": "Time", "th_act": "Action", "empty": "No matching results in scan history.", "admin_title": "Admin Control Panel", "stat_total": "Total scans", "stat_danger": "Dangerous links", "weights": "Adjust scan weights", "close": "Close", "footer1": "Qassim University - College of Applied Studies © 2026", "footer2": "Supervised by: Dr. Walid Al-Karamti", "sc1": "URL structure [20%]", "sc2": "Domain spoofing [20%]", "sc3": "Domain indicators [15%]", "sc4": "Connection encryption [10%]", "sc5": "Redirects [10%]", "sc6": "Risky files [25%]", "url_label": "URL:", "theme_title": "Toggle theme", "url_aria": "URL to scan", "hist_ph": "Search history...", "b_safe": "Safe", "b_warn": "Warn", "b_danger": "Danger", "rescan": "Rescan", "m1_ok": "Sound structure", "m1_bad": "Suspicious symbols / long URL", "m2_ok": "No impersonation", "m2_bad": "Mimics a known brand!", "m3_ok": "No suspicious indicators", "m3_bad": "Suspicious TLD/keywords", "m4_ok": "HTTPS encryption active", "m4_bad": "Unencrypted (HTTP)", "m5_ok": "Direct, no redirects", "m5_bad": "Hidden redirect / short link", "m6_ok": "No risky files", "m6_bad": "Suspicious executable/archive", "r0": "No risk indicators found in the URL itself. This does not guarantee the site's content is safe.", "r1": "Suspicious structure: IP host, @ symbol, punycode, very long URL, or many subdomains.", "r2": "High character similarity to a known corporate, bank or government domain (Typosquatting).", "r3": "The domain uses a risky TLD, free hosting, or common phishing keywords.", "r4": "The link uses unencrypted HTTP; transmitted data is exposed.", "r5": "The link is shortened or carries a redirect parameter hiding the final destination.", "r6": "The link points to an executable or archive that may be malware.", "tag_SAFE": "Safe", "tag_WARNING": "Warning", "tag_DANGER": "Danger", "title_SAFE": "The link is safe and trusted", "title_WARNING": "Suspicious link - proceed with caution", "title_DANGER": "Danger! Do not open this link", "desc_SAFE": "Very low risk score; the scan found no fraudulent threats.", "desc_WARNING": "The link has misleading indicators or lacks the minimum security certificates.", "desc_DANGER": "The link is classified as a high-risk threat involving phishing or malware.", "toast_invalid": "Invalid URL, please check it", "toast_cancel": "Scan cancelled", "toast_clear": "Scan history cleared", "toast_copied": "Report copied to clipboard!", "toast_copyfail": "Copy failed, please copy the text manually"}};
+Object.assign(I18N.ar,{geo_title:"الموقع الجغرافي للسيرفر",geo_loading:"جاري تحديد الموقع...",geo_fail:"تعذّر تحديد الموقع (قد يكون النطاق غير فعّال أو لا يوجد اتصال).",geo_ip:"عنوان IP",geo_org:"المزوّد",geo_est:"تقديري من امتداد النطاق",geo_none:"غير محدد",geo_note:"يُحدَّد الموقع من عنوان IP للسيرفر وقد لا يمثل موقع مالك الموقع (CDN/استضافة).",geo_report:"الموقع الجغرافي",r7a:"النطاق لا يُحلّ إلى عنوان IP في DNS (غير موجود أو منتهي)، وقد يكون وهمياً.",r7b:"النطاق بامتداد سعودي (.sa) لكن السيرفر مستضاف خارج المملكة.",r7c:"بلد السيرفر لا يطابق الدولة التي يدل عليها امتداد النطاق.",r7d:"الرابط يحاكي علامة/جهة سعودية بينما السيرفر خارج المملكة."});
+Object.assign(I18N.en,{geo_title:"Server Geographic Location",geo_loading:"Locating...",geo_fail:"Could not determine location (domain may be inactive or you are offline).",geo_ip:"IP address",geo_org:"Provider",geo_est:"Estimated from domain extension",geo_none:"Unknown",geo_note:"Location is based on the server IP and may not reflect the site owner (CDN/hosting).",geo_report:"Geo location",r7a:"The domain does not resolve to an IP in DNS (nonexistent or expired); it may be fake.",r7b:"A Saudi (.sa) domain whose server is hosted outside Saudi Arabia.",r7c:"The server country does not match the country implied by the domain extension.",r7d:"The link imitates a Saudi brand/entity while the server is outside Saudi Arabia."});
 
         function t(k) { return (I18N[currentLang] && I18N[currentLang][k]) || I18N.ar[k] || k; }
 
@@ -657,9 +671,12 @@ const I18N = {"ar": {"r_allow": "النطاق ضمن القائمة البيضا
                     clearInterval(scanInterval);
                     
                     scanTimeout = setTimeout(() => {
-                        document.getElementById('scanningSection').classList.add('hidden');
-                        isScanning = false;
-                        analyzeAndShowResults(url);
+                        const seq = ++scanSeq;
+                        analyzeAndShowResults(url, seq).catch(() => {}).finally(() => {
+                            if (seq !== scanSeq) return;
+                            document.getElementById('scanningSection').classList.add('hidden');
+                            isScanning = false;
+                        });
                     }, 400);
                 }
             }, 150);
@@ -674,12 +691,74 @@ const I18N = {"ar": {"r_allow": "النطاق ضمن القائمة البيضا
         }
 
         function cancelScan() {
+            scanSeq++;
             clearInterval(scanInterval); clearTimeout(scanTimeout);
             isScanning = false;
             document.getElementById('scanningSection').classList.add('hidden');
             showToast(t('toast_cancel'), 'ph-x-circle');
         }
 
+
+/*GEO_START*/
+const GEO_CACHE={};
+function geoName(cc){try{return new Intl.DisplayNames([currentLang==='ar'?'ar':'en'],{type:'region'}).of(cc)}catch(e){return cc}}
+function geoFlag(cc){return cc&&cc.length===2?String.fromCodePoint(...[...cc.toUpperCase()].map(c=>127397+c.charCodeAt(0))):'\u{1F310}'}
+const SA_BRANDS=['alrajhi','rajhi','absher','qiwa','stc','tawakkalna','nafath','sadad','alahli','riyadbank','najm','zatca','mada','smsa'];
+function geoRule(r,geo,C){
+  if(!C.on[7]||!geo||r.reasons.includes('r_allow')||r.reasons.includes('r_block'))return r;
+  const tld=r.host.split('.').pop(),cc=geoFromTld(r.host);let s=0;const why=[];
+  if(geo.nx){s+=.5;why.push('r7a');}
+  else if(geo.cc){
+    if(tld==='sa'&&geo.cc!=='SA'){s+=.7;why.push('r7b');}
+    else if(cc&&cc!==geo.cc){s+=.4;why.push('r7c');}
+    if(r.impSA&&geo.cc!=='SA'){s+=.6;why.push('r7d');}
+  }
+  let pts=Math.round(C.w[7]*Math.min(1,s));
+  if(pts<=0)return r;
+  if(r.score===0)pts=Math.min(pts,Math.max(0,C.warn-1));
+  if(pts<=0)return r;
+  r.score=Math.min(100,r.score+pts);
+  r.reasons=r.reasons.filter(x=>x!=='r0').concat(why);
+  r.m[7]='m7_bad';
+  r.verdict=r.score>=C.danger?'DANGER':r.score>=C.warn?'WARNING':'SAFE';
+  return r;
+}
+function geoFromTld(host){const t=host.split('.').pop();if(/^[a-z]{2}$/.test(t))return(t==='uk'?'GB':t.toUpperCase());return null}
+async function geoLookup(host){
+  if(GEO_CACHE[host])return GEO_CACHE[host];
+  if(host.startsWith('['))return null;
+  const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),6000);
+  try{
+    let ip=host;
+    if(!/^\d{1,3}(\.\d{1,3}){3}$/.test(host)){
+      const d=await(await fetch('https://cloudflare-dns.com/dns-query?name='+encodeURIComponent(host)+'&type=A',{headers:{accept:'application/dns-json'},signal:ctl.signal})).json();
+      const a=(d.Answer||[]).find(x=>x.type===1);if(!a)return d.Status===3?(GEO_CACHE[host]={nx:true}):null;ip=a.data;
+    }
+    const g=await(await fetch('https://ipwho.is/'+ip,{signal:ctl.signal})).json();
+    if(!g.success)return null;
+    const c=g.connection||{};
+    return GEO_CACHE[host]={ip,cc:g.country_code,city:g.city||'',region:g.region||'',org:c.org||c.isp||''};
+  }catch(e){return null}finally{clearTimeout(to)}
+}
+let geoToken=0;
+async function renderGeo(host){
+  const my=++geoToken,val=document.getElementById('geoValue'),meta=document.getElementById('geoMeta');
+  if(!val||!host)return;
+  meta.innerHTML='';val.textContent=t('geo_loading');
+  const g=await geoLookup(host);
+  if(my!==geoToken)return;
+  const row=(k,v)=>{const d=document.createElement('div');d.textContent=t(k)+': ';const b=document.createElement('span');b.dir='ltr';b.className='text-slate-300';b.textContent=v;d.appendChild(b);meta.appendChild(d)};
+  if(g&&g.cc){
+    val.textContent=geoFlag(g.cc)+' '+geoName(g.cc)+(g.city?' - '+g.city:'');
+    row('geo_ip',g.ip);if(g.org)row('geo_org',g.org);
+  }else{
+    const cc=geoFromTld(host);
+    if(cc){val.textContent=geoFlag(cc)+' '+geoName(cc)+' ('+t('geo_est')+')';}
+    else val.textContent='\u{1F310} '+t('geo_none');
+    const d=document.createElement('div');d.textContent=t('geo_fail');meta.appendChild(d);
+  }
+}
+/*GEO_END*/
 /*ENGINE_START*/
 const BRANDS={paypal:['paypal.com'],google:['google.com','goo.gl','gmail.com'],microsoft:['microsoft.com','live.com','office.com','outlook.com'],apple:['apple.com','icloud.com'],amazon:['amazon.com','amazon.sa'],netflix:['netflix.com'],facebook:['facebook.com','fb.com'],instagram:['instagram.com'],whatsapp:['whatsapp.com'],snapchat:['snapchat.com'],linkedin:['linkedin.com'],alrajhi:['alrajhibank.com.sa'],rajhi:['alrajhibank.com.sa'],absher:['absher.sa'],qiwa:['qiwa.sa'],stc:['stc.com.sa'],tawakkalna:['tawakkalna.sa'],nafath:['nafath.sa'],sadad:['sadad.com'],alahli:['alahli.com','snb.com.sa'],riyadbank:['riyadbank.com'],aramex:['aramex.com'],smsa:['smsaexpress.com'],najm:['najm.sa'],zatca:['zatca.gov.sa'],mada:['mada.com.sa']};
 const TRUSTED=[].concat(...Object.values(BRANDS),['github.com','githubusercontent.com','wikipedia.org','youtube.com','twitter.com','x.com','anthropic.com','claude.ai','apple.news']);
@@ -709,12 +788,12 @@ function scanEngine(url,C){
   if(labels.length-sfx>=3)S[1]+=.6;
   if((host.match(/-/g)||[]).length>=3)S[1]+=.5;
   // 2) انتحال العلامات
-  let imp=false;
+  let imp=false,impB='';
   const isOff=b=>BRANDS[b].some(d=>host===d||host.endsWith('.'+d));
   for(const b of Object.keys(BRANDS)){
     if(isOff(b))continue;
     for(const t of toks){const n=normH(t);
-      if(n===b||(b.length>=5&&Math.abs(n.length-b.length)<=1&&lev(n,b)<=1)||(b.length>=6&&(n.startsWith(b)||n.endsWith(b)))){imp=true;break}}
+      if(n===b||(b.length>=5&&Math.abs(n.length-b.length)<=1&&lev(n,b)<=1)||(b.length>=6&&(n.startsWith(b)||n.endsWith(b)))){imp=true;impB=b;break}}
     if(imp)break;
   }
   if(!imp&&(C.brands||[]).some(x=>x&&lower.includes(x)))imp=true;
@@ -744,12 +823,17 @@ function scanEngine(url,C){
   score=Math.min(100,score);
   const verdict=score>=C.danger?'DANGER':score>=C.warn?'WARNING':'SAFE';
   if(!reasons.length)reasons.push('r0');
-  return{score,verdict,m,reasons,host};
+  return{score,verdict,m,reasons,host,impSA:imp&&SA_BRANDS.includes(impB)};
 }
 /*ENGINE_END*/
-function analyzeAndShowResults(url) {
+async function analyzeAndShowResults(url, seq) {
     const r = scanEngine(url, CFG);
     if (!r) { showToast(t('toast_invalid'), 'ph-warning'); return; }
+    if (CFG.on[7] && !r.reasons.includes('r_allow') && !r.reasons.includes('r_block')) {
+        const geo = await geoLookup(r.host);
+        if (seq !== scanSeq) return;
+        geoRule(r, geo, CFG);
+    }
     const result = { url, hostname: r.host, score: r.score, verdict: r.verdict, m: r.m, reasons: r.reasons, ts: Date.now() };
     admRecord(result, Date.now() - (window.__t0 || Date.now()));
     lastResult = result;
@@ -784,6 +868,7 @@ function analyzeAndShowResults(url) {
             for (let i = 1; i <= 6; i++) document.getElementById('mod' + i + '-val').textContent = t((data.m || {})[i] || ('m' + i + '_ok'));
 
             document.getElementById('testedUrlVal').textContent = data.url;
+            renderGeo(data.hostname || (()=>{try{return new URL(data.url).hostname}catch(e){return ''}})());
             const rs = document.getElementById('resultsSection');
             rs.classList.remove('hidden');
             if (!keepScroll) rs.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -862,9 +947,10 @@ function analyzeAndShowResults(url) {
         function copyResults() {
             const url = document.getElementById('testedUrlVal').textContent;
             const score = document.getElementById('scoreCircle').textContent;
+            const geoTxt = (document.getElementById('geoValue')||{}).textContent || '-';
             const textToCopy = currentLang === 'ar'
-                ? `تقرير فحص منصة "آمن":\nالرابط: ${url}\nمؤشر المخاطر: ${score}/100`
-                : `"Aman" platform scan report:\nURL: ${url}\nRisk score: ${score}/100`;
+                ? `تقرير فحص منصة "آمن":\nالرابط: ${url}\nمؤشر المخاطر: ${score}/100\n${t('geo_report')}: ${geoTxt}`
+                : `"Aman" platform scan report:\nURL: ${url}\nRisk score: ${score}/100\n${t('geo_report')}: ${geoTxt}`;
 
             const done = () => showToast(t('toast_copied'), 'ph-check');
             const fallback = () => {
@@ -885,14 +971,15 @@ function analyzeAndShowResults(url) {
         const escA = x => String(x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         const ld = (k, d) => { try { const v = JSON.parse(store.get(k)); return v == null ? d : v; } catch (e) { return d; } };
         const clone = o => JSON.parse(JSON.stringify(o));
-        const CFG_DEF = {v:2,w:{1:20,2:20,3:15,4:10,5:10,6:25},on:{1:1,2:1,3:1,4:1,5:1,6:1},warn:10,danger:40,allow:[],block:[],brands:[],rate:10,timeout:5,pass:null};
+        const CFG_DEF = {v:2,w:{1:20,2:20,3:15,4:10,5:10,6:25,7:10},on:{1:1,2:1,3:1,4:1,5:1,6:1,7:1},warn:10,danger:40,allow:[],block:[],brands:[],rate:10,timeout:5,pass:null};
         let CFG = Object.assign(clone(CFG_DEF), (c => (c && c.v === 2) ? c : {pass: c && c.pass || null})(ld('guardurl_cfg', {})));
+        CFG.w = Object.assign({7:10}, CFG.w); CFG.on = Object.assign({7:1}, CFG.on);
         let STATS = Object.assign({total:0,SAFE:0,WARNING:0,DANGER:0,ms:0}, ld('guardurl_stats', {}));
         let LOG = ld('guardurl_log', []), AUDIT = ld('guardurl_audit', []), scanTimes = [];
         let admExp = 0, admTab = 'dash';
         const AD = {};
         const VL = {SAFE:'آمن',WARNING:'تحذير',DANGER:'خطر'}, VC = {SAFE:'#10b981',WARNING:'#f59e0b',DANGER:'#f43f5e'};
-        const RN = {1:'هيكل الرابط (Structure)',2:'انتحال العلامات (Typosquatting)',3:'مؤشرات النطاق (امتداد/كلمات مشبوهة)',4:'بروتوكول غير مشفّر (HTTP)',5:'إعادة توجيه / روابط مختصرة',6:'ملفات تنفيذية / ضغط'};
+        const RN = {1:'هيكل الرابط (Structure)',2:'انتحال العلامات (Typosquatting)',3:'مؤشرات النطاق (امتداد/كلمات مشبوهة)',4:'بروتوكول غير مشفّر (HTTP)',5:'إعادة توجيه / روابط مختصرة',6:'ملفات تنفيذية / ضغط',7:'الموقع الجغرافي للسيرفر (Geo)'};
         const sv = () => { store.set('guardurl_cfg', JSON.stringify(CFG)); store.set('guardurl_stats', JSON.stringify(STATS)); store.set('guardurl_log', JSON.stringify(LOG)); store.set('guardurl_audit', JSON.stringify(AUDIT)); };
         function audit(a) { AUDIT.unshift({ts:Date.now(),by:'admin',a}); AUDIT.length = Math.min(AUDIT.length, 200); sv(); }
         function admRecord(r, ms) { STATS.total++; STATS[r.verdict]++; STATS.ms += ms; LOG.unshift({url:r.url,verdict:r.verdict,score:r.score,ts:r.ts,ms}); LOG.length = Math.min(LOG.length, 200); sv(); }
